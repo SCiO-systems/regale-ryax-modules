@@ -24,6 +24,10 @@ spec:
     human_name: "Value used for missing data"
     name: missing_value
     type: "integer"    
+  - help: "pit maximum area"
+    human_name: "Maximum area of pit"
+    name: max_area
+    type: "integer"    
   outputs:
   - help: "one of output files"
     human_name: "An output"
