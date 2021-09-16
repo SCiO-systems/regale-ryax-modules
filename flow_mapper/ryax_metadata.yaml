@@ -2,7 +2,7 @@ apiVersion: "ryax.tech/v1"
 kind: Functions
 spec:
   id: flow_mapper
-  human_name: Flow Mapper Component
+  human_name: Flow-Mapper-Component
   type: python3
   version: "1.0"
   logo: "logo.png"
@@ -12,6 +12,10 @@ spec:
     human_name: "Elevation map"
     name: file
     type: "file"
+  - help: "rows number"
+    human_name: "Number of rows of file"
+    name: nrow
+    type: "integer"
   outputs:
   - help: "one of output files"
     human_name: "An output"
