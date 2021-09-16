@@ -20,6 +20,10 @@ spec:
     human_name: "Number of columns of file"
     name: ncol
     type: "integer"
+  - help: "missing data value"
+    human_name: "Value used for missing data"
+    name: missing_value
+    type: "integer"    
   outputs:
   - help: "one of output files"
     human_name: "An output"
