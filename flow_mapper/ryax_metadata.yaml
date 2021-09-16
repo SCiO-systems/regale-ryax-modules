@@ -27,7 +27,11 @@ spec:
   - help: "pit maximum area"
     human_name: "Maximum area of pit"
     name: max_area
-    type: "integer"    
+    type: "integer"
+  - help: "max depth"
+    human_name: "Maximum depth of pit"
+    name: max_depth
+    type: "float"        
   outputs:
   - help: "one of output files"
     human_name: "An output"
