@@ -32,7 +32,7 @@ spec:
     human_name: "Maximum depth of pit"
     name: max_depth
     type: "float"        
-  - help: "verbose"
+  - help: "Print messages"
     human_name: "Verbose"
     name: verbose
     type: "boolean"
