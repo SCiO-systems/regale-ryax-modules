@@ -35,7 +35,7 @@ spec:
   - help: "Print messages"
     human_name: "Verbose"
     name: verbose
-    type: "bool"
+    type: "integer"
   - help: "rows limits"
     human_name: "Limits of rows to process"
     name: rlim
