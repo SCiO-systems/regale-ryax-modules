@@ -1,62 +1,51 @@
 apiVersion: "ryax.tech/v1"
 kind: Functions
 spec:
-  id: flow-mapper
+  id: flow_mapper
   human_name: Flow Mapper Component
   detail: "First part of landmapR in python"
   type: python3
   version: "1.0"
+  logo: logo.png
   inputs:
-    - help: DEM file
-      human_name: Elevation map
-      name: file
-      type: file
-
-    - help: rows number
-      human_name: Number of rows of file
-      name: nrow
-      type: integer
-
-    - help: cols number
-      human_name: Number of columns of file
-      name: ncol
-      type: integer
-
-    - help: missing data value
-      human_name: Value used for missing data
-      name: missing_value
-      type: integer
-
-
-    - help: pit maximum area
-      human_name: Maximum area of pit
-      name: max_area
-      type: integer
-
-
-    - help: max depth
-      human_name: Maximum depth of pit
-      name: max_depth
-      type: float
-
-
-    - help: verbose 
-      human_name: Verbose
-      name: verbose
-      type: boolean
-
-    - help: rows limits
-      human_name: Limits of rows to process
-      name: rlim
-      type: integer
-
-    - help: cols limits
-      human_name: Limits of columns to process
-      name: clim
-      type: integer
-
+  - help: DEM file
+    human_name: Elevation map
+    name: file
+    type: file
+  - help: rows number
+    human_name: Number of rows of file
+    name: nrow
+    type: integer
+  - help: cols number
+    human_name: Number of columns of file
+    name: ncol
+    type: integer
+  - help: missing data value
+    human_name: Value used for missing data
+    name: missing_value
+    type: integer
+  - help: pit maximum area
+    human_name: Maximum area of pit
+    name: max_area
+    type: integer
+  - help: max depth
+    human_name: Maximum depth of pit
+    name: max_depth
+    type: float
+  - help: verbose 
+    human_name: Verbose
+    name: verbose
+    type: boolean
+  - help: rows limits
+    human_name: Limits of rows to process
+    name: rlim
+    type: integer
+  - help: cols limits
+    human_name: Limits of columns to process
+    name: clim
+    type: integer
   outputs:
-    - help: one of output files
-      human_name: An output
-      name: db_ilocal
-      type: file
+  - help: one of output files
+    human_name: An output
+    name: db_ilocal
+    type: file
