@@ -2,7 +2,7 @@ apiVersion: "ryax.tech/v1"
 kind: Functions
 spec:
   id: flow_mapper
-  human_name: flow-mapper-component
+  human_name: flowmapper
   type: python3
   version: "1.0"
   logo: "logo.png"
