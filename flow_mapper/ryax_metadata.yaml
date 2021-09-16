@@ -35,7 +35,7 @@ spec:
   - help: "Print messages"
     human_name: "Verbose"
     name: verbose
-    type: "boolean"
+    type: "integer"
   outputs:
   - help: "one of output files"
     human_name: "An output"
