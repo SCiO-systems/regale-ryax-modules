@@ -230,4 +230,5 @@ def handle(module_input):
 #     db_ilocal.to_csv(output_stats_folder+"dem_ilocal.csv",index=False)
     successful = 200
     
+    return {'successful' : successful}
     
