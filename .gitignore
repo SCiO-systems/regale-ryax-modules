@@ -47,5 +47,6 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+*.ipynb_checkpoints/
 
 __pycache__/
