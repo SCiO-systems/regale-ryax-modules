@@ -54,8 +54,11 @@ def handle(module_input):
 
     if (resume==None): resume=""
 
-
-
+    # in order to be compatible with ryax platform, inputs with value -1 are translated to None value
+    if clim==-1:
+        clim = None
+    if rlim==-1:
+        rlim = None
 
 
     #--------------------------------------------------------------------------------------------
