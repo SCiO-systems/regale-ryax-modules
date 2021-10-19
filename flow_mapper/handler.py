@@ -229,4 +229,4 @@ def handle(module_input):
 #     db_fill["db"].to_csv(output_stats_folder+"dem_fill.csv",index=False)
 #     db_ilocal.to_csv(output_stats_folder+"dem_ilocal.csv",index=False)
 
-    return db_ilocal
+    return db_ilocal.to_json()
