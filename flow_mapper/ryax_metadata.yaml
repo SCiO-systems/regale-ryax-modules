@@ -45,7 +45,7 @@ spec:
     name: clim
     type: "integer"    
   outputs:
-  - help: "one of output files"
-    human_name: "An output"
-    name: db_ilocal
-    type: "file"
+  - help: "an integer to see the output logic"
+    human_name: "Successful code"
+    name: successful
+    type: "integer"
