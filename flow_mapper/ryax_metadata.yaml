@@ -1,12 +1,12 @@
 apiVersion: "ryax.tech/v2.0"
-kind: Functions
+kind: Processor
 spec:
   id: flow-mapper
   human_name: Flow Mapper Component
   type: python3
   version: "1.0"
   logo: "logo.png"
-  detail: "First part of landmapR in python"
+  description: "First part of landmapR in python"
   dependencies:
   - pythonPackages.dbfread
   - pythonPackages.pandas
