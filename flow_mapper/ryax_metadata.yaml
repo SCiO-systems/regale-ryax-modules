@@ -1,12 +1,12 @@
-apiVersion: "ryax.tech/v1"
-kind: Functions
+apiVersion: "ryax.tech/v2.0"
+kind: Processor
 spec:
   id: flow-mapper
   human_name: Flow Mapper Component
   type: python3
   version: "1.0"
   logo: "logo.png"
-  detail: "First part of landmapR in python"
+  description: "First part of landmapR in python"
   inputs:
   - help: "DEM file"
     human_name: "Elevation map"
@@ -23,7 +23,7 @@ spec:
   - help: "missing data value"
     human_name: "Value used for missing data"
     name: missing_value
-    type: "integer"    
+    type: "integer"
   - help: "pit maximum area"
     human_name: "Maximum area of pit"
     name: max_area
@@ -31,7 +31,7 @@ spec:
   - help: "max depth"
     human_name: "Maximum depth of pit"
     name: max_depth
-    type: "float"        
+    type: "float"
   - help: "Print messages"
     human_name: "Verbose"
     name: verbose
@@ -43,7 +43,7 @@ spec:
   - help: "cols limits"
     human_name: "Limits of columns to process"
     name: clim
-    type: "integer"    
+    type: "integer"
   outputs:
   - help: "an integer to see the output logic"
     human_name: "Successful code"
