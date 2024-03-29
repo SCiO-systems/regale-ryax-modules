@@ -9,6 +9,7 @@ from datar.all import f
 from itertools import compress
 import math
 import datar
+from tifffile import imread
 
 #import from other files
 # from LITAP_functions import *   
@@ -20,13 +21,21 @@ import LITAP_utils
 
 #LITAP_load.R functions
 def load_dem(file,type_="elev"):
-    db = pd.DataFrame(iter(DBF(file, load=True)))
-    db.columns = map(str.lower, db.columns)
+    
+    if file.endswith(".dbf"):
+        db = pd.DataFrame(iter(DBF(file, load=True)))
+        db.columns = map(str.lower, db.columns)
+    elif file.endswith(".tif"):
+        image = imread(file)
+        array = image.ravel()
+        db = pd.DataFrame(array,columns=["elev"])
+    else:
+        raise("not right format of input file (.dbf ot .tif)")
     #TODO check name function in R
     return db
 
 def db_format(db,nrow,ncol,missing_value=-9999,verbose=True):
-    
+
     if (nrow*ncol!=len(db)):
         print("TON POULO")
     db["seqno"] = range(1, len(db) + 1)
@@ -44,10 +53,27 @@ def db_format(db,nrow,ncol,missing_value=-9999,verbose=True):
 
 def add_buffer(db,stats=None):
     #maybe rewrite the condition better
-    if stats:
-        #TODO funny stuff at LITAP_load.R, add_buffer
-        raise Exception('TODO funny stuff at LITAP_load.R, add_buffer')
-        pass
+    if stats is not None:
+        if "buffer" not in db.columns:
+            raise Exception("Buffer column is missing from db dataframe")
+            
+        index = datar.all.filter(db,~f.buffer)
+        index = dplyr.select(index,f.seqno)
+        index = dplyr.mutate(index, seqno_orig=list(range(1,dplyr.n(index)+1)))
+        index = index.reset_index(drop=True)
+        
+        r = copy.deepcopy(stats)
+        
+        for column in stats.columns:
+            if "row" in column or "col" in column:
+                r[column] += 1
+                
+        for column in r.columns:
+            if "seqno" in column:
+                r[column] = index.loc[r[column]-1,"seqno"].reset_index(drop=True)
+            if "drec" in column:
+                r[column] = index.loc[r[column]-1,"seqno"].reset_index(drop=True)
+        return r
         
     else:
         ncols= max(db["col"])
@@ -56,8 +82,9 @@ def add_buffer(db,stats=None):
         db.sort_values(by=["seqno"])
         
         if np.isin(["drec"],list(db)).any():
-            drec = db.loc[db["drec"]!=None,"drec"].unique()
-            
+            drec = pd.DataFrame(db.loc[db["drec"]!=None,"drec"].unique(),columns=["drec"])
+           
+           
         names = ["row","col"]
         rows = [1] * (ncols+2) + list(range(1,nrows+3)) + list(range(1,nrows+3)) + [nrows+2] * (ncols+2)
         cols = list(range(1,ncols+3)) + [1] * (nrows+2) + [ncols+2] * (nrows+2) + list(range(1,ncols+3)) 
@@ -77,13 +104,23 @@ def add_buffer(db,stats=None):
         db["seqno_buffer"] = list(range(1,len(db["row"])+1))
         
         if np.isin(["drec"],list(db)).any():
-            #TODO funny stuff at LITAP_load.R, add_buffer
-            raise Exception('TODO in add_buffer')
+            
+            drec = dplyr.left_join(drec, dplyr.select(db,f.seqno,f.seqno_buffer),by = {'drec': 'seqno'})
+            drec = datar.all.rename(drec, drec_buffer = "seqno_buffer")
+            
+            db = dplyr.left_join(db,drec,by="drec")
+
+            db = dplyr.select(db, ~f.drec)
+            
+            db = datar.all.rename(db, drec="drec_buffer")
+            # index = dplyr.left_join(index,dplyr.select(db,f.seqno,f.seqno_buffer),by = ["seqno_buffer"])
+            
             
         r = db.drop(columns=["seqno"])
         r = r.rename(columns={"seqno_buffer": "seqno"})
         names = r.columns.tolist()
-        names = [names[-1]] + names[:-1]
+        names.remove("seqno")
+        names = ["seqno"] + names
         r = r[names]
         r = r.sort_values(by=["seqno"])
     return r
@@ -156,3 +193,17 @@ def load_file(file, nrow=None, ncol=None, missing_value=-9999,rlim=None,clim=Non
     db = db_prep(db, clim, rlim, edge, verbose)
     
     return db
+
+def format_rule(rule,type_):
+    for col in rule.columns:
+        if rule[col].dtype == object:
+            rule[col] = rule[col].str.lower()
+
+    # !!!MAYBE THERE ARE MORE COLUMNS THAT HAVE slope IN THEIR NAME!!!
+    if type_=="arule":
+        rule["attr_in"] = rule["attr_in"].replace("slope", "slope_pct")
+    
+    if 'zone' not in rule.columns:
+        rule["zone"] = 0
+
+    return rule

@@ -1,0 +1,9 @@
+{
+"hyperparameters" : 
+	{	
+	"grid" : 5,
+	"str_val" : 10000,
+	"ridge_val" : 10000,
+	"verbose": true
+	}
+}

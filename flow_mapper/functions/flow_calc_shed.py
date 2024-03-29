@@ -75,7 +75,7 @@ def get_upslope3(db, w, type_=["upslope","elev_diff"]):
     
     if (w>0):
 
-        flow = get_all_flow(copy.copy(db),w)
+        flow = get_all_flow(copy.deepcopy(db),w)
 
         t = [x for x in type_ if x in db.columns.tolist()]
         for cell in o:
@@ -160,20 +160,20 @@ def calc_upslopes(db, type_ = ["upslope","elev_diff"]):
     db_nested = pd.concat(db_nested.apply(lambda x: get_upslope3(x["data"],x["shedno"],type_), axis=1).tolist())
     db_exploded = db_nested >> tidyr.unnest(f.data)
     db_exploded["drec_shed"] = db_exploded["drec_shed"].astype(pd.Int64Dtype())
-    db_exploded = db_exploded.replace(-9999,pd.NA)
+    # db_exploded = db_exploded.replace(-9999,pd.NA)
     
     db = db_exploded.sort_values(by=["seqno"]).reset_index(drop=True)
 #     print(db.columns)
 #     db = db.reindex(columns=["seqno","elev","drec","shedno"]+db.columns.tolist()[4:])
 #     print(db.columns)
     
-    
+    # db = db.replace(-9999,pd.NA)
     return db
 
 
 def calc_shed4(db, verbose = False):
     
-    db_origin = copy.copy(db)
+    db_origin = copy.deepcopy(db)
     
     npits = len(db["ddir"][db["ddir"]==5])
     
@@ -216,6 +216,9 @@ def calc_shed4(db, verbose = False):
     # Calculate upslope and elev diff
     
     db = calc_upslopes(db,["upslope"])
+    
+    db = db.replace(-9999,pd.NA)
+    
 #     print(db.iloc[4400:4403])
     # Save initial values
     db["initial_shed"] = db["shedno"]
@@ -242,4 +245,3 @@ def calc_shed4(db, verbose = False):
     db = db >> dplyr.arrange(f.seqno)
     
     return db
-

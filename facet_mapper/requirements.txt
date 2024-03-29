@@ -1,0 +1,8 @@
+python=3.8.18
+datar=0.8.1
+dbfread
+numpy=1.24.4
+pandas=1.3.4
+tifffile
+pyspark=3.3.0
+## JAVA must be installed in the system for pyspark to run: sudo apt install default-jdk

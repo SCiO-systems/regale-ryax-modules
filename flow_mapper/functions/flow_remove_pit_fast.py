@@ -102,7 +102,7 @@ def remove_pit1(w_rm, w_stats, db, update_elev = False, verbose = False):
     return db
 
 def first_pitr1(db, max_area=10,max_depth=0.5,verbose=False):
-    
+    # print("entered")
     # Working with initial_shed
     db["shedno"] = db["initial_shed"]
     
@@ -117,17 +117,21 @@ def first_pitr1(db, max_area=10,max_depth=0.5,verbose=False):
         
         w_stats["remove"]= np.logical_and(np.logical_or(w_stats["pit_area"]<=max_area, (w_stats["pour_elev"]-w_stats["pit_elev"]<=max_depth)),~w_stats["edge_pit"])
         
-        
+    
     # In sequence, for each watershed that should be removed
     # Combine if too small (max_area) or too shallow (max_depth)
-    done = False        
+    done = False
+    # print("before while loop")
+    # i=-1
     while(not done):
+        # i+=1
+        # print(i)
         w_rm = w_stats >> dplyr.filter(f.remove==True)
         
         w_rm = w_rm >> dplyr.slice(1)
         if len(w_rm)>0:
             sheds = [w_rm["shedno"][0],w_rm["drains_to"][0]]
-        
+            print("Combining watersheds: ", sheds)
             db = remove_pit1(w_rm, sheds, db, update_elev=True)
 
             # Update shed statistics but only for the two sheds involved
@@ -166,7 +170,12 @@ def first_pitr1(db, max_area=10,max_depth=0.5,verbose=False):
     db["local_ddir"] = db["ddir"]
     db["local_elev_diff"] = db["elev_diff"]
     
-
+    db["shedno"] = db["shedno"].replace(-9999,pd.NA)
+    db["drec_shed"] = db["drec_shed"].replace(-9999,pd.NA)
+    # db["data"] = db["data"].replace(-9999,pd.NA)
+    db["local_shed"] = db["local_shed"].replace(-9999,pd.NA)
+    
+    # db = db.replace(-9999,pd.NA)
     return db
 
 
@@ -176,7 +185,7 @@ def second_pitr1(db, verbose = False):
     
     w_stats = pit_stat1(db,verbose=verbose)
     w_stats = out_stat(w_stats)
-    w_stats = w_stats >> dplyr.arrange(f.pit_elev,f.varatio)
+    w_stats = dplyr.arrange(w_stats, f.pit_elev,f.varatio)
     
     w_stats = w_stats >> dplyr.mutate(removed=False, final = False, next_pit=f.drains_to, becomes=0)
     
@@ -462,4 +471,3 @@ def third_pitr1(db, verbose = False):
       "stats" : fill}
     
     return db
-    

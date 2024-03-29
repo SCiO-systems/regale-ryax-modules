@@ -1,51 +1,29 @@
-apiVersion: "ryax.tech/v1"
-kind: Functions
+apiVersion: "ryax.tech/v2.0"
+kind: Processor
 spec:
   id: flow-mapper
   human_name: Flow Mapper Component
   type: python3
-  version: "1.0"
+  version: "3.0"
   logo: "logo.png"
-  detail: "First part of landmapR in python"
+  categories:
+    - Processor
+  dependencies:
+    - pythonPackages.dbfread
+    - pythonPackages.pandas
+    - pythonPackages.numpy
+    - pythonPackages.datar
   inputs:
-  - help: "DEM file"
-    human_name: "Elevation map"
-    name: file
-    type: "file"
-  - help: "rows number"
-    human_name: "Number of rows of file"
-    name: nrow
-    type: "integer"
-  - help: "cols number"
-    human_name: "Number of columns of file"
-    name: ncol
-    type: "integer"
-  - help: "missing data value"
-    human_name: "Value used for missing data"
-    name: missing_value
-    type: "integer"    
-  - help: "pit maximum area"
-    human_name: "Maximum area of pit"
-    name: max_area
-    type: "integer"
-  - help: "max depth"
-    human_name: "Maximum depth of pit"
-    name: max_depth
-    type: "float"        
-  - help: "Print messages"
-    human_name: "Verbose"
-    name: verbose
-    type: "integer"
-  - help: "rows limits"
-    human_name: "Limits of rows to process"
-    name: rlim
-    type: "integer"
-  - help: "cols limits"
-    human_name: "Limits of columns to process"
-    name: clim
-    type: "integer"    
+  - help: DEM file
+    human_name: Elevation map
+    name: input_file
+    type: file
+  - help: hyperparameters json file
+    human_name: hyperparameters json file
+    name: input_json
+    type: file
   outputs:
-  - help: "an integer to see the output logic"
-    human_name: "Successful code"
-    name: successful
-    type: "integer"
+  - help: Directory with outputs
+    human_name: Result directory
+    name: python_outputs
+    type: directory

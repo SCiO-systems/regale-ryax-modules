@@ -1,0 +1,17 @@
+{
+  "hyperparameters": 
+  {
+    "use_spark" : true,
+    "end" : null,
+    "n_remove" : 9,
+    "procedure" : "lsm",
+    "zone" : null,
+    "out_format" : "csv",
+    "clean" : false,
+    "verbose" : false,
+    "quiet" : false,
+    "log" : true,
+    "nrow" : 110,
+    "ncol" : 72
+  }
+}

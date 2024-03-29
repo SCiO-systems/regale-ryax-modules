@@ -240,7 +240,8 @@ def calc_weti(db, grid = 5, verbose = False):
     db_n.loc[db_n["match"].isin(db_first["match"]),"status"] = "higher_drec"
 
     db_after = db_drec.loc[~db_drec["seqno"].isin(db_first["seqno"]),"seqno"]
-    
+    # return db_drec,db_first
+    # return db_after
     # Only cells which have higher neighbours
     db_n_sub = dplyr.select(db_n, f.seqno, f.seqno_n, f.order, f.order_n, f.diag, f.elev_diff, f.status, f.tan2_f)
     db_n_sub = db_n_sub.replace(np.nan,pd.NA)
@@ -278,7 +279,11 @@ def calc_weti(db, grid = 5, verbose = False):
     if(verbose):
         print("  Fix special cases")        
 
+    # return db_c,db_after
+
     db_flat = dplyr.filter(db_c, db_c["seqno"].isin(db_after))
+    # return db_flat
+    
     db_flat = dplyr.select(db_flat, f.drec, qarea_flat1 = f.qarea1, qarea_flat2 = f.qarea2)
 
     db_c_temp = dplyr.inner_join(dplyr.select(db_c, f.seqno, f.qarea1, f.qarea2), db_flat, by = {'seqno': 'drec'})
@@ -286,8 +291,9 @@ def calc_weti(db, grid = 5, verbose = False):
     db_c_temp = dplyr.summarize(db_c_temp, 
                            qarea_flat1 = datar.all.sum_(f.qarea_flat1),
                            qarea_flat2 = datar.all.sum_(f.qarea_flat2))
-
-    db_c_temp = dplyr.mutate(db_c_temp, qarea1 = f.qarea1 + f.qarea_flat1, qarea2 = f.qarea2 + f.qarea_flat2)
+    
+    if not db_c_temp.empty:
+        db_c_temp = dplyr.mutate(db_c_temp, qarea1 = f.qarea1 + f.qarea_flat1, qarea2 = f.qarea2 + f.qarea_flat2)
 
     db_c_temp = db_c_temp.drop(columns=["qarea_flat1","qarea_flat2"])
 

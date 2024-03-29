@@ -25,10 +25,10 @@ def calc_ddir2(db,verbose=False):
     # Check for flat plateaus
     # - get neighbouring directions
 
-    db_flats = db1 >> dplyr.filter(f.flatcell == True)
+    db_flats = dplyr.filter(db1, f.flatcell == True)
     
     db_flats = nb_values(db1, max_cols=max(db["col"]), col = ["ddir","elev"], db_sub = db_flats.reset_index(drop=True))
-    db_flats = db_flats >> dplyr.group_by(f.seqno)
+    db_flats = dplyr.group_by(db_flats,f.seqno)
     
     end = False
     a = 0
@@ -38,10 +38,10 @@ def calc_ddir2(db,verbose=False):
     while(not end):
         
         # Calculate change in ddir
-        db_flats = db_flats >> dplyr.mutate(elev_diff = f.elev[0]-f.elev_n)
+        db_flats = dplyr.mutate(db_flats, elev_diff = f.elev[0]-f.elev_n)
         
-        db_flats = db_flats >> dplyr.summarise(ddir = f.n[(f.elev_diff>=0) & (f.elev_diff!=pd.NA) & (f.ddir_n!=5) & (f.ddir_n!=pd.NA)])
-        db_flats = db_flats >> dplyr.ungroup()
+        db_flats = dplyr.summarise(db_flats, ddir = f.n[(f.elev_diff>=0) & (f.elev_diff!=pd.NA) & (f.ddir_n!=5) & (f.ddir_n!=pd.NA)])
+        db_flats = dplyr.ungroup(db_flats)
         db_flats = db_flats.dropna().drop_duplicates(subset=["seqno"])
 
         
@@ -97,14 +97,20 @@ def calc_ddir2(db,verbose=False):
             
             p = db_flats.iloc[i]["patch"] 
             cells_n = np.unique(db_flats.loc[datar.base.testing.is_in(db_flats["seqno_n"],cell),"seqno"])
-            p_old = np.unique(db_flats.loc[datar.base.testing.is_in(db_flats["seqno"],cells_n),"patch"])
-            p_old = [x for x in p_old if (not x is pd.NA) and (x!=p)]
-#             print(p_old)
+            # print(datar.base.testing.is_in(db_flats["seqno"],cells_n[0]))
+            # print(db_flats.loc[datar.base.testing.is_in(db_flats["seqno"],cells_n[0]),"patch"])
+            # print(np.unique(db_flats.loc[datar.base.testing.is_in(db_flats["seqno"],cells_n[0]),"patch"]))
+            t = db_flats.loc[datar.base.testing.is_in(db_flats["seqno"],cells_n[0]),"patch"]
+            t = t.replace(pd.NA,-9999)
+            p_old = np.unique(t).tolist()
+
+            p_old = [x for x in p_old if (x!=-9999) and (x!=p)]
+        
             db_flats.loc[datar.base.testing.is_in(db_flats["seqno"],cells_n),"patch"] = p
             if len(p_old)>0:
                 db_flats.loc[datar.base.testing.is_in(db_flats["patch"],p_old),"patch"] = p
             
-            
+        
         # Get middle cell in a patch
         pit_centres = db_flats >> dplyr.select(~f.n,~f.ddir_n,~f.seqno_n)
         pit_centres = pit_centres >> dplyr.distinct()
@@ -118,8 +124,11 @@ def calc_ddir2(db,verbose=False):
         
         pit_centres["cell"] = pit_centres.apply(lambda x: tuple([x["col"],x["row"]]),axis=1)
         pit_centres["dist"] = pit_centres.apply(lambda x: np.sqrt((x["centre"][0]-x["cell"][0])**2+(x["centre"][1]-x["cell"][1])**2),axis=1)
-        pit_centres["dist_min"] = np.amin(pit_centres["dist"])
-        pit_centres["n_p"] = len(pit_centres["seqno"])
+        
+        pit_centres["dist_min"] = pit_centres[["patch","dist"]].groupby(["patch"]).transform(lambda x: np.amin(x))
+        
+        #TO IDIO ME APO PANW KAI EDW
+        pit_centres["n_p"] = pit_centres[["patch","seqno"]].groupby(["patch"]).transform(lambda x: len(x))
         
         pit_centres = pit_centres >> dplyr.group_by(f.patch)
         pit_centres = pit_centres >> dplyr.summarise(seqno = f.seqno[f.dist==f.dist_min], n_p = f.n_p.unique())
@@ -139,8 +148,16 @@ def calc_ddir2(db,verbose=False):
         db_flats["ddir_opts"] = db_flats["ddir_opts"].apply(lambda x: [y for y in x[0]])
         db_flats = db_flats >> dplyr.select(~f.n,~f.ddir_n,~f.seqno_n)
         db_flats = db_flats >> dplyr.distinct(f.seqno,_keep_all=True)
+        
         db_flats = db_flats >> dplyr.mutate(centre = datar.base.testing.is_in(f.seqno,pit_centres))
+        # return db_flats, pit_centres
+        #DROP rows with all centre values==False in order to avoid error
+        db_flats["drop"] = db_flats[["centre","patch"]].groupby("patch").transform(lambda x: not any(x))
+        db_flats = db_flats[db_flats["drop"] == False]
+        db_flats = db_flats.drop(columns=['drop'])
+
         db_flats = db_flats >> dplyr.group_by(f.patch)
+        
         db_flats = db_flats >> dplyr.mutate(row_f=f.row[f.centre].iloc[0], col_f=f.col[f.centre].iloc[0])
         db_flats = db_flats >> dplyr.ungroup()
         
@@ -163,7 +180,6 @@ def calc_ddir2(db,verbose=False):
 
     # Check for side-by-side pits, replace so one flows into the other
     # Shouldn't be necessary anymore, as specified lowest cell already?
+    db1 = db1.replace(-9999,pd.NA)
     
     return db1
-
-

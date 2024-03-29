@@ -1,8 +1,8 @@
-{ stdenv, pkgs, python, python3Packages }:
+{ lib, pkgs, python, python3Packages }:
 
 let
   self = rec {
-    callPackage = stdenv.lib.callPackageWith (pkgs // python3Packages // self);
+    callPackage = lib.callPackageWith (pkgs // python3Packages // self);
 
     # The folowing comment line is use to inject packages, do not change it.
     # ADD NEW PACKAGE HERE

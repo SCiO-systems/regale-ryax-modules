@@ -254,16 +254,23 @@ def find_lowest(w, w_stats, final_pits, removed, verbose=False):
     w_pits = trace_pits(w, w_stats)
     
     wp = w_pits[0]
-    lowest = w_stats >> dplyr.filter(f.shedno==wp)
+    # print(wp)
+    lowest = dplyr.filter(w_stats, f.shedno==wp)
     
     visited = []
     end = False
-    
+    i = -1
     while(not end):
 
         if(not datar.base.testing.is_in(wp,visited)):
             visited.append(wp)
-            
+            i+=1
+            # print(i)
+            # print("***********************")
+            # print(wp)
+            # print("---------------")
+            # print(w_stats["shedno"])
+            # print("***********************")
             pit1 = w_stats >> dplyr.filter(f.shedno==wp)
             pit1["at_final"] = False
         
@@ -284,7 +291,7 @@ def find_lowest(w, w_stats, final_pits, removed, verbose=False):
                 print("    Pit 2: ", pit2["shedno"].iloc[0])
             
 #             print(pit2)
-            wp = pit2["shedno"]
+            wp = pit2["shedno"].iloc[0]
             
             if pit2["final"].iloc[0]:
                 lowest = pit1
@@ -368,7 +375,7 @@ def get_dir(row, col, row_f, col_f, ddir_opts = list(range(1,10))):
   # If best direction not an option, get next best
   # Prioritorize smaller seqno
     if not datar.base.testing.is_in(l,ddir_opts) and l!=5:
-        raise("TODO: if case in get_dir function in LITAP_functions.R, called from calc_dir2 function in flow_calc_dir.R file. Relatively easy stuff.")
+        # raise("TODO: if case in get_dir function in LITAP_functions.R, called from calc_dir2 function in flow_calc_dir.R file. Relatively easy stuff.")
         closest = {
             "1" : [4, 2, 7, 3, 8, 6, 9],
             "2" : [1, 3, 4, 6, 7, 9, 8],
@@ -379,9 +386,14 @@ def get_dir(row, col, row_f, col_f, ddir_opts = list(range(1,10))):
             "8" : [7, 9, 4, 6, 1, 3, 2],
             "9" : [8, 6, 7, 3, 4, 2, 1]
         }
-    
-        c = closest[str(l)][0]
-    
+        
+        c = closest[str(l)]
+        print(c)
+        print(ddir_opts)
+        print(list(set(c).intersection(ddir_opts)))
+        l = list(set(c).intersection(ddir_opts))[0]
+        
+        
     return l 
 
 def trace_flow_all(cells, drec):

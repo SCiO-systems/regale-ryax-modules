@@ -1,0 +1,14 @@
+{
+  "input_file" : "../data/epirus_dem_3_cropped.tif",
+  "hyperparameters": 
+  {
+      "nrow" : 72,
+      "ncol" : 110,
+      "nodata" : -9999,
+      "max_area" : 10,
+      "max_depth" : 3,
+      "verbose": false,
+      "clim" : null,
+      "rlim" : null
+    }
+}

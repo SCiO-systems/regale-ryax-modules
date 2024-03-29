@@ -101,13 +101,19 @@ def pit_stat1(db, w = None, verbose = False):
         stats = stats >> dplyr.right_join(pp,by=f.shedno)
     
     else:
+        #TODO else bracket in flow_pit_stat_fast.R"
         raise("TODO else bracket in flow_pit_stat_fast.R")
     
 
     if ((db.columns).isin(["pond_shed"]).any()):
         
-        temp = db >> dplyr.select(f.shedno,f.pond_shed)
+        temp = dplyr.select(db, f.shedno,f.pond_shed)
         temp = temp >> dplyr.distinct()
+        temp = temp.replace({pd.NA: np.nan})
+        temp = temp.astype('float64')
+        # print(temp)
+        # print("----------------")
+        # print(stats)
         stats = stats >> dplyr.left_join(temp, by=f.shedno)
         
 #         raise("TODO small if bracket in flow_pit_stat_fast.R")

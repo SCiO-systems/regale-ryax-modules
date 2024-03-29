@@ -40,7 +40,7 @@ def slope_gc(db, grid=1):
     db_slopes["scr"] = ((2*db_slopes["elev"] - db_slopes["elev_n4"] - db_slopes["elev_n6"])/grid**2).replace(np.nan,pd.NA)
     db_slopes["scc"] = ((2*db_slopes["elev"] - db_slopes["elev_n2"] - db_slopes["elev_n8"])/grid**2).replace(np.nan,pd.NA)
     
-    db_slopes = db_slopes >> dplyr.select(~dplyr.contains("_n"))
+    db_slopes = dplyr.select(db_slopes, ~dplyr.contains("_n"))
     
     # Fix zero values for sgr and sgc and start for sgre and sgcn
     db_slopes.loc[db_slopes["sgr"]==0,"sgr"] = 0.00001
